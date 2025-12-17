@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repo
+      # 1. Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -29,20 +29,18 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      # 5. Load environment variables
-      - name: Load .env
+      # 5. Load environment variables from .env
+      - name: Load .env variables
         run: |
-          echo "ENV_FILE=.env" >> $GITHUB_ENV
-          export $(cat .env | xargs)
-      
+          npm install dotenv-cli
+          npx dotenv -e .env -- echo "Env loaded"
+
       # 6. Run Chapter6 tests only
       - name: Run Chapter6 Playwright tests
-        run: |
-          npx playwright test tests/chapter-6 \
-            --project=chromium \
-            --config=playwright.config.ts \
-            --grep @chapter6 \
-            --reporter=html,allure-playwright
+        run: npx dotenv -e .env -- npx playwright test "tests/chapter-6" \
+          --project=chromium \
+          --config=playwright.config.ts \
+          --reporter=html,allure-playwright
 
       # 7. Upload HTML report
       - name: Upload Playwright HTML Report
@@ -51,14 +49,14 @@ jobs:
           name: playwright-report
           path: playwright-report
 
-      # 8. Upload screenshots (if any failed tests)
+      # 8. Upload screenshots
       - name: Upload Playwright Screenshots
         uses: actions/upload-artifact@v4
         with:
           name: screenshots
           path: test-results/screenshots
 
-      # 9. Upload test-data.json for reference
+      # 9. Upload test-data.json
       - name: Upload test-data.json
         uses: actions/upload-artifact@v4
         with:
