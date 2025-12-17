@@ -13,11 +13,11 @@ jobs:
     steps:
       # 1. Checkout the repo
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -46,21 +46,21 @@ jobs:
 
       # 7. Upload HTML report
       - name: Upload Playwright HTML Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report
 
       # 8. Upload screenshots (if any failed tests)
       - name: Upload Playwright Screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: screenshots
           path: test-results/screenshots
 
       # 9. Upload test-data.json for reference
       - name: Upload test-data.json
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-data
           path: test-data/testdata.json
