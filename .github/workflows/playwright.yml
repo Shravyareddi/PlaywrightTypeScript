@@ -1,4 +1,4 @@
-name: Playwright Tests - Chapter6
+name: Playwright Chapter6 Tests
 
 on:
   push:
@@ -9,48 +9,58 @@ on:
 jobs:
   test-chapter6:
     runs-on: ubuntu-latest
-    steps:
-      # Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      # Setup Node.js
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # Install dependencies
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Install Playwright browsers
-      - name: Install Playwright Browsers
-        run: npx playwright install
+      # 4. Install Playwright browsers
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
 
-      # Load environment variables
+      # 5. Load environment variables
       - name: Load .env
         run: |
-          echo "Loading environment variables from .env"
+          echo "ENV_FILE=.env" >> $GITHUB_ENV
           export $(cat .env | xargs)
-
-      # Run only chapter6 tests with test data
-      - name: Run Chapter6 Tests
+      
+      # 6. Run Chapter6 tests only
+      - name: Run Chapter6 Playwright tests
         run: |
-          npx playwright test tests/chapter-6 --project=chromium \
-          --config=playwright.config.ts \
-          --grep @chapter6 \
-          --reporter=html,allure-playwright
+          npx playwright test tests/chapter-6 \
+            --project=chromium \
+            --config=playwright.config.ts \
+            --grep @chapter6 \
+            --reporter=html,allure-playwright
 
-      # Upload test artifacts
-      - name: Upload Test Reports
-        uses: actions/upload-artifact@v4
+      # 7. Upload HTML report
+      - name: Upload Playwright HTML Report
+        uses: actions/upload-artifact@v3
         with:
-          name: playwright-reports
+          name: playwright-report
           path: playwright-report
 
-      - name: Upload Screenshots
-        uses: actions/upload-artifact@v4
+      # 8. Upload screenshots (if any failed tests)
+      - name: Upload Playwright Screenshots
+        uses: actions/upload-artifact@v3
         with:
           name: screenshots
-          path: tests/chapter-6/screenshots
+          path: test-results/screenshots
+
+      # 9. Upload test-data.json for reference
+      - name: Upload test-data.json
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-data
+          path: test-data/testdata.json
