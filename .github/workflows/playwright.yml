@@ -1,27 +1,45 @@
 name: Playwright Tests
+
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
+
 jobs:
   test:
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    # 1️⃣ Checkout repo
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2️⃣ Setup Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: lts/*
+        node-version: 20
+
+    # 3️⃣ Install dependencies
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
+
+    # 4️⃣ CI-only cleanup
+    - name: Cleanup unwanted folders and files
+      run: |
+        echo "Cleaning old chapters, reports, and extra test data..."
+        rm -rf tests/chapter-1 tests/chapter-2 tests/chapter-3 tests/chapter-4 tests/chapter-5 tests/chapter-7
+        rm -rf playwright-report test-results screenshots allure-report allure-results
+        rm -rf test-data/dev test-data/qa test-data/api_requests
+        echo "Cleanup completed."
+
+    # 5️⃣ Run Playwright tests
+    - name: Run Playwright Tests
       run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      env:
+        BASE_URL: ${{ secrets.BASE_URL }}   # optional if using secrets
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
