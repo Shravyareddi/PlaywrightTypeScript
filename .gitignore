@@ -1,0 +1,26 @@
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Allure
+allure-results/
+allure-report/
+
+# HAR files
+har/
+
+# Test reports
+report.json
+results.xml
+
+# Screenshots & videos (if stored outside Playwright folders)
+screenshots/
+videos/
+
+# Environment files
+.env
